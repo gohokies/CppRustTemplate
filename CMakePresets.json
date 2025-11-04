@@ -1,0 +1,64 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "include": [
+        "preset-ninja-gcc.json",
+        "preset-vs2022-msvc.json",
+        "preset-xcode.json"
+    ],
+    "configurePresets": [
+        {
+            "name": "ninja-multi",
+            "displayName": "Ninja Multi-Config",
+            "description": "Configure with vcpkg toolchain and generate Ninja project files for all configurations",
+            "binaryDir": "${sourceDir}/builds/${presetName}",
+            "generator": "Ninja Multi-Config",
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "ninja-debug",
+            "configurePreset": "ninja-multi",
+            "displayName": "Build (Debug)",
+            "description": "Build with Ninja (Debug)",
+            "configuration": "Debug"
+        },
+        {
+            "name": "ninja-release",
+            "configurePreset": "ninja-multi",
+            "displayName": "Build (Release)",
+            "description": "Build with Ninja (Release)",
+            "configuration": "Release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test-ninja",
+            "configurePreset": "ninja-multi",
+            "hidden": true
+        },
+        {
+            "name": "test-ninja-debug",
+            "description": "Test (Debug)",
+            "displayName": "Test (Debug)",
+            "configuration": "Debug",
+            "inherits": [
+                "test-ninja"
+            ]
+        },
+        {
+            "name": "test-ninja-release",
+            "description": "Test (Release)",
+            "displayName": "Test (Release)",
+            "configuration": "Release",
+            "inherits": [
+                "test-ninja"
+            ]
+        }
+    ]
+}

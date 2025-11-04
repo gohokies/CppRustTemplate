@@ -1,0 +1,73 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "xcode",
+            "displayName": "Xcode",
+            "description": "Configure with vcpkg toolchain and generate Xcode project files",
+            "generator": "Xcode",
+            "hidden" : true,
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "binaryDir": "${sourceDir}/builds/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+            }
+        },
+        {
+            "name": "xcode-arm64",
+            "displayName": "Xcode-Arm64",
+            "description": "Configure with vcpkg toolchain and generate Xcode project files",
+            "inherits": "xcode",
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "VCPKG_TARGET_TRIPLET": "arm64-osx"
+            }
+        },
+        {
+            "name": "xcode-x64",
+            "displayName": "Xcode-X64",
+            "description": "Configure with vcpkg toolchain and generate Xcode project files",
+            "inherits": "xcode",
+            "cacheVariables": {
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "VCPKG_TARGET_TRIPLET": "x64-osx"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "xcode-x64-debug",
+            "configurePreset": "xcode-x64",
+            "displayName": "Build X64 (Debug)",
+            "description": "Build X64 (Debug)",
+            "configuration": "Debug"
+        },
+        {
+            "name": "xcode-x64-release",
+            "configurePreset": "xcode-x64",
+            "displayName": "Build X64 (Release)",
+            "description": "Build X64 (Release)",
+            "configuration": "Release"
+        },
+        {
+            "name": "xcode-arm64-debug",
+            "configurePreset": "xcode-arm64",
+            "displayName": "Build Arm64 (Debug)",
+            "description": "Build Arm64 (Debug)",
+            "configuration": "Debug"
+        },
+        {
+            "name": "xcode-arm64-release",
+            "configurePreset": "xcode-arm64",
+            "displayName": "Build Arm64 (Release)",
+            "description": "Build Arm64 (Release)",
+            "configuration": "Release"
+        }
+
+    ]
+}

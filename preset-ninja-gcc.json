@@ -1,0 +1,72 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 23,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "ninja-gcc",
+            "displayName": "Ninja Config GCC",
+            "description": "Configure with vcpkg toolchain, generate Ninja project, build with gcc",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/builds/${presetName}",
+            "generator": "Ninja Multi-Config",
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
+            "name": "linux-ninja-gcc-x64",
+            "displayName": "Linux Ninja GCC X64",
+            "description": "Configure with vcpkg toolchain, generate Ninja project, build X64 with gcc",
+            "inherits": "ninja-gcc",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "x64-linux"
+            }
+        },
+        {
+            "name": "linux-ninja-gcc-arm64",
+            "displayName": "Linux Ninja GCC Arm64",
+            "description": "Configure with vcpkg toolchain, generate Ninja project, build Arm64 with gcc",
+            "inherits": "ninja-gcc",
+            "cacheVariables": {
+                "VCPKG_TARGET_TRIPLET": "arm64-linux"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "linux-ninja-gcc-x64-debug",
+            "configurePreset": "linux-ninja-gcc-x64",
+            "displayName": "Linux Ninja Build X64 (Debug)",
+            "description": "Linux Ninja Build X64 with GCC (Debug)",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-ninja-gcc-x64-release",
+            "configurePreset": "linux-ninja-gcc-x64",
+            "displayName": "Linux Ninja Build X64 (Release)",
+            "description": "Linux Ninja Build X64 with GCC (Release)",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-ninja-gcc-arm64-debug",
+            "configurePreset": "linux-ninja-gcc-arm64",
+            "displayName": "Linux Ninja Build Arm64 (Debug)",
+            "description": "Linux Ninja Build Arm64 with GCC (Debug)",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-ninja-gcc-arm64-release",
+            "configurePreset": "linux-ninja-gcc-arm64",
+            "displayName": "Linux Ninja Build Arm64 (Release)",
+            "description": "Linux Ninja Build Arm64 with GCC (Release)",
+            "configuration": "Release"
+        }
+    ]
+}
