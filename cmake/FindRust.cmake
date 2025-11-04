@@ -46,11 +46,10 @@ function(add_rust_library)
     cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     if(WIN32)
-        set(OUTPUT "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${ARGS_TARGET}.lib")
+        set(MY_TARGET_NAME "${ARGS_TARGET}.lib")
     else()
         set(MY_TARGET_NAME "lib${ARGS_TARGET}.a")
     endif()
-    set(OUTPUT "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${MY_TARGET_NAME}")
 
     file(GLOB_RECURSE LIB_SOURCES "${ARGS_SOURCE_DIRECTORY}/*.rs")
 
@@ -79,14 +78,8 @@ function(add_rust_library)
         IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX"
         IMPORTED_LOCATION_DEBUG "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${MY_TARGET_NAME}"
         IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
-        IMPORTED_LOCATION_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${MY_TARGET_NAME}")
-
-    # Specify where the library is and where to find the headers
-    #set_target_properties(${ARGS_TARGET}
-    #    PROPERTIES
-    #    IMPORTED_LOCATION "${OUTPUT}"
-    #    INTERFACE_INCLUDE_DIRECTORIES "${ARGS_SOURCE_DIRECTORY};${ARGS_BINARY_DIRECTORY}"
-    #)
+        IMPORTED_LOCATION_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${MY_TARGET_NAME}"
+        )
 endfunction()
 
 function(add_rust_test)
