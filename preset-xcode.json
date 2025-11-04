@@ -25,7 +25,8 @@
             "inherits": "xcode",
             "cacheVariables": {
                 "CMAKE_OSX_ARCHITECTURES": "arm64",
-                "VCPKG_TARGET_TRIPLET": "arm64-osx"
+                "VCPKG_TARGET_TRIPLET": "arm64-osx",
+                "RUST_COMPILER_TARGET": "aarch64-apple-darwin"
             }
         },
         {
@@ -35,7 +36,8 @@
             "inherits": "xcode",
             "cacheVariables": {
                 "CMAKE_OSX_ARCHITECTURES": "x86_64",
-                "VCPKG_TARGET_TRIPLET": "x64-osx"
+                "VCPKG_TARGET_TRIPLET": "x64-osx",
+                "RUST_COMPILER_TARGET": "x86_64-apple-darwin"
             }
         }
     ],
@@ -68,6 +70,5 @@
             "description": "Build Arm64 (Release)",
             "configuration": "Release"
         }
-
     ]
 }

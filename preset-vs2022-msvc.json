@@ -26,7 +26,8 @@
             "displayName": "VS2022-X64",
             "architecture":"x64",
             "cacheVariables": {
-                "VCPKG_TARGET_TRIPLET": "x64-windows"
+                "VCPKG_TARGET_TRIPLET": "x64-windows",
+                "RUST_COMPILER_TARGET": "x86_64-pc-windows-msvc"
             }
         },
         {
@@ -35,7 +36,8 @@
             "displayName": "VS2022-Arm64",
             "architecture":"arm64",
             "cacheVariables": {
-                "VCPKG_TARGET_TRIPLET": "arm64-windows"
+                "VCPKG_TARGET_TRIPLET": "arm64-windows",
+                "RUST_COMPILER_TARGET": "aarch64-pc-windows-msvc"
             }
         },
         {
