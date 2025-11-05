@@ -78,7 +78,11 @@ function(add_rust_library)
     add_custom_target(${ARGS_TARGET}_target DEPENDS "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_TARGET_NAME}")
 
     # Create a static imported library target from custom target
-    add_library(${ARGS_TARGET} STATIC IMPORTED GLOBAL)
+    if ($ARGS_SHARED)
+        add_library(${ARGS_TARGET} SHARED IMPORTED GLOBAL)
+    else()
+        add_library(${ARGS_TARGET} STATIC IMPORTED GLOBAL)
+    endif()
     add_dependencies(${ARGS_TARGET} ${ARGS_TARGET}_target)
     target_link_libraries(${ARGS_TARGET} INTERFACE ${RUST_NATIVE_STATIC_LIBS})
 
@@ -90,6 +94,12 @@ function(add_rust_library)
         IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
         IMPORTED_LOCATION_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${MY_TARGET_NAME}"
         )
+    if (WIN32 AND ${ARGS_SHARED})
+        set_target_properties(${ARGS_TARGET} PROPERTIES
+            IMPORTED_IMPLIB_DEBUG "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${ARGS_TARGET}.lib"
+            IMPORTED_IMPLIB_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${ARGS_TARGET}.lib"
+        )
+    endif()
 endfunction()
 
 function(add_rust_test)
