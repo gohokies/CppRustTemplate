@@ -48,16 +48,21 @@ function(add_rust_library)
     if (${ARGS_SHARED})        
         if(WIN32)
             set(MY_TARGET_NAME "${ARGS_TARGET}.dll")
+            set(MY_LIB_NAME "${ARGS_TARGET}.dll.lib")
         elseif(LINUX)
             set(MY_TARGET_NAME "lib${ARGS_TARGET}.so")
+            set(MY_LIB_NAME "lib${ARGS_TARGET}.so")
         else()
             set(MY_TARGET_NAME "lib${ARGS_TARGET}.dylib")
+            set(MY_LIB_NAME "lib${ARGS_TARGET}.dylib")
         endif()
     else()
         if (WIN32)        
             set(MY_TARGET_NAME "${ARGS_TARGET}.lib")
+            set(MY_LIB_NAME "${ARGS_TARGET}.lib")
         else()
             set(MY_TARGET_NAME "lib${ARGS_TARGET}.a")
+            set(MY_LIB_NAME "${ARGS_TARGET}.a")
         endif()
     endif()
 
@@ -68,14 +73,14 @@ function(add_rust_library)
     list(JOIN MY_CARGO_ARGS " " MY_CARGO_ARGS_STRING)
 
     add_custom_command(
-        OUTPUT "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_TARGET_NAME}"
+        OUTPUT "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_LIB_NAME}"
         COMMAND ${CMAKE_COMMAND} -E env "RUSTFLAGS=\"${RUSTFLAGS}\"" ${cargo_EXECUTABLE} ARGS ${MY_CARGO_ARGS} "$<IF:$<CONFIG:DEBUG>,-v,--release>"
         WORKING_DIRECTORY "${ARGS_SOURCE_DIRECTORY}"
         DEPENDS ${LIB_SOURCES}
         COMMENT "Building ${ARGS_TARGET} in ${ARGS_BINARY_DIRECTORY} with:  ${cargo_EXECUTABLE} ${MY_CARGO_ARGS_STRING}")
 
     # Create a target from the build output
-    add_custom_target(${ARGS_TARGET}_target DEPENDS "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_TARGET_NAME}")
+    add_custom_target(${ARGS_TARGET}_target DEPENDS "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_LIB_NAME}")
 
     # Create a static imported library target from custom target
     if (${ARGS_SHARED})
@@ -98,8 +103,8 @@ function(add_rust_library)
         )
     if (WIN32 AND ${ARGS_SHARED})
         set_target_properties(${ARGS_TARGET} PROPERTIES
-            IMPORTED_IMPLIB_DEBUG "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${MY_TARGET_NAME}.lib"
-            IMPORTED_IMPLIB_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${MY_TARGET_NAME}.lib"
+            IMPORTED_IMPLIB_DEBUG "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/debug/${MY_LIB_NAME}"
+            IMPORTED_IMPLIB_RELEASE "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/release/${MY_LIB_NAME}"
         )
     endif()
 endfunction()
