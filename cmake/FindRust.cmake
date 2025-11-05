@@ -68,7 +68,8 @@ function(add_rust_library)
 
     file(GLOB_RECURSE LIB_SOURCES "${ARGS_SOURCE_DIRECTORY}/*.rs")
 
-    set(MY_CARGO_ARGS ${CARGO_ARGS})
+    set(MY_CARGO_ARGS "build")
+    list(APPEND MY_CARGO_ARGS "--target" ${RUST_COMPILER_TARGET})
     list(APPEND MY_CARGO_ARGS "--target-dir" ${ARGS_BINARY_DIRECTORY})
     list(JOIN MY_CARGO_ARGS " " MY_CARGO_ARGS_STRING)
 
@@ -77,7 +78,7 @@ function(add_rust_library)
         COMMAND ${CMAKE_COMMAND} -E env "RUSTFLAGS=\"${RUSTFLAGS}\"" ${cargo_EXECUTABLE} ARGS ${MY_CARGO_ARGS} "$<IF:$<CONFIG:DEBUG>,-v,--release>"
         WORKING_DIRECTORY "${ARGS_SOURCE_DIRECTORY}"
         DEPENDS ${LIB_SOURCES}
-        COMMENT "Building ${ARGS_TARGET} in ${ARGS_BINARY_DIRECTORY} with:  ${cargo_EXECUTABLE} ${MY_CARGO_ARGS_STRING}")
+        COMMENT "Building ${ARGS_TARGET} in ${ARGS_BINARY_DIRECTORY} with: ${cargo_EXECUTABLE} ${MY_CARGO_ARGS_STRING}")
 
     # Create a target from the build output
     add_custom_target(${ARGS_TARGET}_target DEPENDS "${ARGS_BINARY_DIRECTORY}/${RUST_COMPILER_TARGET}/$<IF:$<CONFIG:DEBUG>,debug,release>/${MY_LIB_NAME}")
@@ -89,10 +90,7 @@ function(add_rust_library)
         add_library(${ARGS_TARGET} STATIC IMPORTED GLOBAL)
     endif()
     add_dependencies(${ARGS_TARGET} ${ARGS_TARGET}_target)
-    target_link_libraries(${ARGS_TARGET} INTERFACE ${RUST_NATIVE_STATIC_LIBS})
-    if (WIN32)
-        target_link_libraries(${ARGS_TARGET} INTERFACE kernel32.lib ntdll.lib userenv.lib ws2_32.lib dbghelp.lib)
-    endif()
+    target_link_libraries(${ARGS_TARGET} INTERFACE ${RUST_DEFAULT_LIBS})
     set_property(TARGET ${ARGS_TARGET} APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE)
     set_target_properties(${ARGS_TARGET} PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES "${ARGS_SOURCE_DIRECTORY};${ARGS_BINARY_DIRECTORY}"
@@ -134,37 +132,16 @@ endfunction()
 find_rust_program(cargo)
 find_rust_program(rustc)
 
-
-# Determine the native libs required to link w/ rust static libs
-# message(STATUS "Detecting native static libs for rust: ${rustc_EXECUTABLE} --crate-type staticlib --print=native-static-libs /dev/null")
-execute_process(
-    COMMAND ${CMAKE_COMMAND} -E env "CARGO_TARGET_DIR=${CMAKE_BINARY_DIR}" ${rustc_EXECUTABLE} --crate-type staticlib --print=native-static-libs /dev/null
-    OUTPUT_VARIABLE RUST_NATIVE_STATIC_LIBS_OUTPUT
-    ERROR_VARIABLE RUST_NATIVE_STATIC_LIBS_ERROR
-    RESULT_VARIABLE RUST_NATIVE_STATIC_LIBS_RESULT
-)
-string(REGEX REPLACE "\r?\n" ";" LINE_LIST "${RUST_NATIVE_STATIC_LIBS_ERROR}")
-
-foreach(LINE ${LINE_LIST})
-    # do the match on each line
-    string(REGEX MATCH "native-static-libs: .*" LINE "${LINE}")
-
-    if(NOT LINE)
-        continue()
-    endif()
-
-    string(REPLACE "native-static-libs: " "" LINE "${LINE}")
-    string(REGEX REPLACE "  " "" LINE "${LINE}")
-    string(REGEX REPLACE " " ";" LINE "${LINE}")
-
-    if(LINE)
-        message(STATUS "Rust's native static libs: ${LINE}")
-        set(RUST_NATIVE_STATIC_LIBS "${LINE}")
-        break()
-    endif()
-endforeach()
+if (WIN32)
+    set(RUST_DEFAULT_LIBS "kernel32.lib;ntdll.lib;userenv.lib;ws2_32.lib;dbghelp.lib")
+elseif (LINUX)
+    set(RUST_DEFAULT_LIBS "-lgcc_s;-lutil;-lrt;-lpthread;-lm;-ldl;-lc")
+else()
+    set(RUST_DEFAULT_LIBS "-lSystem;-lc;-lm")
+endif()
 
 if(NOT RUST_COMPILER_TARGET)
+    message(STATUS "Determining Rust target triple...")
     # Automatically determine the Rust Target Triple.
     # Note: Users may override automatic target detection by specifying their own. Most likely needed for cross-compiling.
     # For reference determining target platform: https://doc.rust-lang.org/nightly/rustc/platform-support.html
@@ -187,13 +164,6 @@ if(NOT RUST_COMPILER_TARGET)
 
         set(RUST_COMPILER_TARGET "${DEFAULT_RUST_COMPILER_TARGET}")
     endif()
-endif()
-
-set(CARGO_ARGS "build")
-
-if(NOT "${RUST_COMPILER_TARGET}" MATCHES "^universal-apple-darwin$")
-    # Don't specify the target for macOS universal builds, we'll do that manually for each build.
-    list(APPEND CARGO_ARGS "--target" ${RUST_COMPILER_TARGET})
 endif()
 
 set(RUSTFLAGS "")
