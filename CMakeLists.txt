@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 enable_testing()
+include(CTest)
 
 find_package(Rust REQUIRED)
 

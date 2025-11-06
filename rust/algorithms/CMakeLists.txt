@@ -5,3 +5,9 @@ add_rust_library(
 )
 
 add_library(rust::algorithms ALIAS algorithms)
+
+add_rust_test(
+    NAME algorithms_test
+    SOURCE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    BINARY_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+)

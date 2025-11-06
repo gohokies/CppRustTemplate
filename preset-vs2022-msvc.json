@@ -93,5 +93,30 @@
             "description": "Build Arm64EC (Release)",
             "configuration": "Release"
         }
+    ],
+    "testPresets": [
+        {
+            "name": "test-vs2022-msvc-x64",
+            "configurePreset": "vs2022-msvc-x64",
+            "hidden": true
+        },
+        {
+            "name": "test-vs2022-msvc-x64-debug",
+            "description": "Test vs2022-msvc-x64 (Debug)",
+            "displayName": "Test vs2022-msvc-x64 (Debug)",
+            "configuration": "Debug",
+            "inherits": [
+                "test-vs2022-msvc-x64"
+            ]
+        },
+        {
+            "name": "test-vs2022-msvc-x64-release",
+            "description": "Test vs2022-msvc-x64 (Release)",
+            "displayName": "Test vs2022-msvc-x64 (Release)",
+            "configuration": "Release",
+            "inherits": [
+                "test-vs2022-msvc-x64"
+            ]
+        }
     ]
 }

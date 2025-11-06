@@ -114,17 +114,12 @@ function(add_rust_test)
     cmake_parse_arguments(ARGS "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
     set(MY_CARGO_ARGS "test")
-
-    if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-        list(APPEND MY_CARGO_ARGS "--release")
-    endif()
-
+    list(APPEND MY_CARGO_ARGS "--target" ${RUST_COMPILER_TARGET})
     list(APPEND MY_CARGO_ARGS "--target-dir" ${ARGS_BINARY_DIRECTORY})
-    list(JOIN MY_CARGO_ARGS " " MY_CARGO_ARGS_STRING)
 
     add_test(
         NAME ${ARGS_NAME}
-        COMMAND ${CMAKE_COMMAND} -E env "CARGO_CMD=test" "CARGO_TARGET_DIR=${ARGS_BINARY_DIRECTORY}" ${cargo_EXECUTABLE} ${MY_CARGO_ARGS} --color always
+        COMMAND ${cargo_EXECUTABLE} ${MY_CARGO_ARGS} "$<IF:$<CONFIG:DEBUG>,-v,--release>"
         WORKING_DIRECTORY ${ARGS_SOURCE_DIRECTORY}
     )
 endfunction()
