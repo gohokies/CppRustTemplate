@@ -141,22 +141,13 @@ else()
 endif()
 
 if(NOT RUST_COMPILER_TARGET)
-    message(STATUS "Determining Rust target triple...")
-    # Automatically determine the Rust Target Triple.
-    # Note: Users may override automatic target detection by specifying their own. Most likely needed for cross-compiling.
-    # For reference determining target platform: https://doc.rust-lang.org/nightly/rustc/platform-support.html
     if(WIN32)
-        # For windows x86/x64, it's easy enough to guess the target.
-        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(RUST_COMPILER_TARGET "x86_64-pc-windows-msvc")
+        if ("$ENV{PROCRSSOR_ARCHITECTURE}" STREQUAL "ARM64")
+            set(RUST_COMPILER_TARGET "aarch64-pc-windows-msvc")
         else()
-            set(RUST_COMPILER_TARGET "i686-pc-windows-msvc")
+            set(RUST_COMPILER_TARGET "x86_64-pc-windows-msvc")
         endif()
-    elseif(CMAKE_SYSTEM_NAME STREQUAL Darwin AND "${CMAKE_OSX_ARCHITECTURES}" MATCHES "^(arm64;x86_64|x86_64;arm64)$")
-        # Special case for Darwin because we may want to build universal binaries.
-        set(RUST_COMPILER_TARGET "universal-apple-darwin")
     else()
-        # Determine default LLVM target triple.
         execute_process(COMMAND ${rustc_EXECUTABLE} -vV
             OUTPUT_VARIABLE RUSTC_VV_OUT ERROR_QUIET)
         string(REGEX REPLACE "^.*host: ([a-zA-Z0-9_\\-]+).*" "\\1" DEFAULT_RUST_COMPILER_TARGET1 "${RUSTC_VV_OUT}")
@@ -164,6 +155,7 @@ if(NOT RUST_COMPILER_TARGET)
 
         set(RUST_COMPILER_TARGET "${DEFAULT_RUST_COMPILER_TARGET}")
     endif()
+    message(STATUS "Determining Rust target triple: ${RUST_COMPILER_TARGET}")
 endif()
 
 set(RUSTFLAGS "")
