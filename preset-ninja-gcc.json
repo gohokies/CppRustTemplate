@@ -70,5 +70,30 @@
             "description": "Linux Ninja Build Arm64 with GCC (Release)",
             "configuration": "Release"
         }
+    ],
+    "testPresets": [
+        {
+            "name": "test-linux-ninja-gcc-x64",
+            "configurePreset": "linux-ninja-gcc-x64",
+            "hidden": true
+        },
+        {
+            "name": "test-linux-ninja-gcc-x64-debug",
+            "description": "Test linux-ninja-gcc-x64 (Debug)",
+            "displayName": "Test linux-ninja-gcc-x64 (Debug)",
+            "configuration": "Debug",
+            "inherits": [
+                "test-linux-ninja-gcc-x64"
+            ]
+        },
+        {
+            "name": "test-linux-ninja-gcc-x64-release",
+            "description": "Test linux-ninja-gcc-x64 (Release)",
+            "displayName": "Test linux-ninja-gcc-x64 (Release)",
+            "configuration": "Release",
+            "inherits": [
+                "test-linux-ninja-gcc-x64"
+            ]
+        }
     ]
 }
